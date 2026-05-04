@@ -1,12 +1,13 @@
 # Abgabedokument
-**Modul:** Angewandte Modellierung und Systemsimulation
-**Semester:** SoSe2026
-**Datum:** 13. April 2026
-**Thema:** Problem Set 1: Project Genesis - The Agentic Awakening
-**Name:** Leonie Ziechmann
-**Matrikelnummer:** XXXXXXX
+- **Modul:** Angewandte Modellierung und Systemsimulation
+- **Semester:** SoSe2026
+- **Name:** Leonie Ziechmann
+- **Matrikelnummer:** XXXXXXX
 
 ---
+
+# Problem Set 1: Project Genesis - The Agentic Awakening
+**Datum:** 13. April 2026
 
 ## Exercise 1: Forging the Digital Sanctum (Environment & Terminal Automation)
 
@@ -31,7 +32,7 @@ leonix@wsl:~/workspace$ tree
 ├── docs
 ├── init_nexus.sh
 └── src
-    └── main.py
+    └── main.py
 
 4 directories, 2 files
 ```
@@ -84,3 +85,28 @@ Wenn das diskrete Modell mit dem expliziten Euler-Verfahren durch eine sehr gro�
 
 ### 2. Persönliche Reflexion zur Orchestrierung eines KI-Agenten
 Die Orchestrierung eines autonomen KI-Agenten zur Steuerung der Simulationspipeline fühlte sich an wie der Übergang vom Ausführenden zum strategischen Architekten. Anstatt mühsam Blockschaltbilder manuell per Drag-and-Drop zu verbinden, konnte ich mich darauf konzentrieren, Absichten und Parameter auf einer Meta-Ebene zu definieren.
+
+---
+
+# Problem Set 2: Project Genesis – The Blueprint & The Vault (Week 2)
+**Datum:** 27. April 2026
+
+## Exercise 1: The Vault of Version Control & Blazing Init (uv & Git)
+
+**1. Verwendeter Prompt für den "Agentic Push":**
+> "My remote URL is https://github.com/leonieziechmann/anmosys26. Please write the terminal commands to initialize git, stage all files respecting the .gitignore, create a commit with the message 'Initial Genesis Vault setup', and push it to the main branch."
+
+**2. Live GitHub Pages Link:**
+[github.com/leonieziechmann/anmosys26](https://github.com/leonieziechmann/anmosys26)
+
+## Exercise 2: Aligning the Triad (Keras 3 + JAX via uv add)
+**Umgebungskonfiguration:**
+Die Abhängigkeiten (`keras`, `jax`, `numpy`, `scipy`, `matplotlib`) wurden erfolgreich mit dem Paketmanager `uv` aufgelöst und in der Datei `pyproject.toml` verankert. Das JAX-Backend für Keras 3 wurde im Skript `src/oracle_setup.py` via Umgebungsvariable konfiguriert und lokal verifiziert. Die exakten Abhängigkeiten sind via `uv.lock` deterministisch festgehalten.
+
+## Exercise 3: Synthesis of the Aether (Fourier Series & RC Filters)
+
+**1. Datengenerierung & Sabotage:**
+Das Skript `src/data_generator.py` generiert die Fourier-Reihe eines Rechtecksignals über 100 Perioden (unter Nutzung der ersten 9 ungeraden Harmonischen). Danach wird die komplexe Übertragungsfunktion des RC-Tiefpassfilters auf jede Harmonische angewendet. Dem Signal wurde zusätzlich Gaußsches Rauschen hinzugefügt und es wurde durch eine massive hochfrequente Spannungsspitze (Sabotage) zwischen Periode 70 und 75 korrumpiert. Das rohe 1D-Array wird physisch lokal gespeichert (`data/datastream.npy`) und über die `.gitignore` vor einem GitHub-Push geschützt.
+
+**2. Ergebnis-Plot des Datenstroms (`data_feed.png`):**
+![Fourier Datastream und Sabotage](data/data_feed.png)
