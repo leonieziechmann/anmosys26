@@ -1,1 +1,3 @@
-.direnv
+.direnv/
+.venv/
+__pycache__/

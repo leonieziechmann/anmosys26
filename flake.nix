@@ -16,11 +16,15 @@
           uv
           git
           python311
+          stdenv.cc.cc.lib
+          zlib
         ];
 
         shellHook = ''
           export UV_PYTHON_DOWNLOADS=never
           export UV_PYTHON=python3
+
+          export LD_LIBRARY_PATH=${pkgs.stdenv.cc.cc.lib}/lib:${pkgs.zlib}/lib:$LD_LIBRARY_PATH
         '';
       };
     };
