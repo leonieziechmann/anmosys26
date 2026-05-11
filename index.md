@@ -110,3 +110,48 @@ Das Skript `src/data_generator.py` generiert die Fourier-Reihe eines Rechtecksig
 
 **2. Ergebnis-Plot des Datenstroms (`data_feed.png`):**
 ![Fourier Datastream und Sabotage](data/data_feed.png)
+
+---
+
+# Problem Set 3: Project Genesis – The Oracle Awakens
+**Datum:** 11. Mai 2026
+
+## Exercise 1 & 2: Architecture & Cloud Training
+
+**1. Implementierung des Oracle:**
+Das "Oracle" wurde als Deep Autoencoder mittels Keras Subclassing API realisiert. In `src/architecture.py` wurden ein `SignalCompression`-Encoder (Reduktion von 50 auf 8 Dimensionen) und ein `SignalExpansion`-Decoder implementiert. Das Modell wurde auf den "normalen" Daten (vor Periode 60) für 30 Epochen trainiert, um die physikalischen Gesetzmäßigkeiten des RC-Filters ohne Anomalien zu erlernen.
+
+**2. Anomalieerkennung:**
+Nach dem Training wurde der gesamte Datensatz rekonstruiert. Der Mean Absolute Error (MAE) dient als Metrik für die Abweichung. Ein Schwellenwert (Anomaly Threshold) wurde basierend auf dem Rekonstruktionsfehler der normalen Daten definiert.
+
+**3. Rekonstruktionsverlust-Plot:**
+Der folgende Plot zeigt den MAE über die Zeit. Deutlich zu erkennen ist der massive Anstieg des Fehlers im Bereich der Sabotage (Periode 70-75), was die erfolgreiche Aktivierung des Oracles bestätigt.
+
+![Oracle Anomaly Detection](data/anomaly_detection_plot.png)
+
+## Exercise 3: Agentic Code Refactoring (The Convolutional Horizon)
+
+**1. Refactoring auf Conv1D:**
+Um lokale zeitliche Muster besser zu erfassen, wurde die Architektur auf Convolutional Layers umgestellt. Hier ist der KI-generierte Code-Snippet für den verbesserten Encoder:
+
+```python
+class ConvSignalCompression(layers.Layer):
+    def __init__(self, latent_dim=8, **kwargs):
+        super().__init__(**kwargs)
+        self.conv1 = layers.Conv1D(filters=16, kernel_size=3, activation='relu', padding='same')
+        self.pool1 = layers.MaxPooling1D(pool_size=2)
+        self.conv2 = layers.Conv1D(filters=latent_dim, kernel_size=3, activation='relu', padding='same')
+        self.flatten = layers.Flatten()
+        self.dense = layers.Dense(latent_dim, activation='relu')
+
+    def call(self, inputs):
+        x = keras.ops.expand_dims(inputs, axis=-1)
+        x = self.conv1(x)
+        x = self.pool1(x)
+        x = self.conv2(x)
+        x = self.flatten(x)
+        return self.dense(x)
+```
+
+**2. Warum Conv1D mathematisch besser geeignet ist:**
+`Conv1D`-Layer sind für Zeitreihen vorteilhafter, da sie lokale Abhängigkeiten durch Faltungskerne erfassen, die über die Zeitachse gleiten. Durch das "Weight Sharing" (geteilte Gewichte) sind sie translationsinvariant und benötigen deutlich weniger Parameter als vollvernetzte Dense-Layer, während sie gleichzeitig robuste Merkmale aus den Wellenformen extrahieren können.
