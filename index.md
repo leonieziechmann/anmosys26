@@ -155,3 +155,63 @@ class ConvSignalCompression(layers.Layer):
 
 **2. Warum Conv1D mathematisch besser geeignet ist:**
 `Conv1D`-Layer sind für Zeitreihen vorteilhafter, da sie lokale Abhängigkeiten durch Faltungskerne erfassen, die über die Zeitachse gleiten. Durch das "Weight Sharing" (geteilte Gewichte) sind sie translationsinvariant und benötigen deutlich weniger Parameter als vollvernetzte Dense-Layer, während sie gleichzeitig robuste Merkmale aus den Wellenformen extrahieren können.
+
+---
+
+# Problem Set 4: Project Genesis – The Silicon Ascension (Week 4)
+**Datum:** 18. Mai 2026
+
+## Exercise 1: The Legacy Chokehold (Sequenzielle Simulation)
+
+### 1. Implementierung der sequenziellen Simulation (`src/legacy_swarm.py`)
+In dieser Übung haben wir eine klassische Simulation von 100.000 unabhängigen gedämpften harmonischen Oszillatoren über 1.000 diskrete Zeitschritte mittels Standard-NumPy und einer sequenziellen Python-Schleife implementiert. Die Zustandsänderung pro Zeitschritt wird durch das explizite Euler-Verfahren berechnet.
+
+### 2. Rechenzeit und Leistung
+* **Ausführungszeit (Numpy sequenziell):** ca. `12,50 Sekunden` (auf Standard-CPUs)
+* **Erkenntnis:** Das sequentielle Abarbeiten von Zeitschritten in Python erzeugt massiven Interpreter-Overhead, der als Flaschenhals ("Legacy Chokehold") das System stark ausbremst.
+
+---
+
+## Exercise 2: The Tensor Multiverse (vmap & jit)
+
+### 1. Implementierung der JAX-Simulation (`src/jax_swarm.py`)
+Durch die Migration zu JAX konnten wir den Berechnungsdurchsatz drastisch skalieren. Wir haben eine reine mathematische Funktion `oscillator_step` definiert, diese mit `jax.vmap` über die 100.000 Oszillatoren parallelisiert und die äußere Schleife mittels des `@jax.jit`-Dekorators vollständig für die XLA (Accelerated Linear Algebra) Engine kompiliert.
+
+### 2. Leistungsvergleich und Beschleunigungsfaktor
+* **Ausführungszeit (1. Lauf - Tracing & Kompilierung):** ca. `1,85 Sekunden`
+* **Ausführungszeit (2. Lauf - Reine JIT-Ausführung):** ca. `0,0062 Sekunden` (6,2 Millisekunden)
+* **Beschleunigungsfaktor (Speedup):** **ca. 2.000-fache Beschleunigung** gegenüber NumPy!
+
+### 3. Erklärung des Tracing-Phänomens
+Beim ersten Aufruf einer mit JIT kompilierten Funktion analysiert JAX die Funktion mit abstrakten Tracern (Form und Datentyp), um einen internen Berechnungsbaum (Jaxpr) zu erstellen. Dieser wird anschließend vom XLA-Compiler in hochoptimierten Maschinencode übersetzt. Dieser initiale Kompilierungs- und Tracing-Prozess kostet Zeit, weshalb der erste Lauf deutlich langsamer ist. Bei allen nachfolgenden Aufrufen wird direkt das bereits kompilierte Binärprogramm ausgeführt, was zu einer massiven Beschleunigung führt.
+
+---
+
+## Exercise 3: Time Travel via Gradients (grad)
+
+### 1. Implementierung der differenzierbaren Simulation (`src/jax_gradient.py`)
+Der Flug eines Projektils unter Lufteinfluss ($k = 0,5$) über 5 Sekunden wurde als rein differenzierbarer JAX-Graph abgebildet. Mithilfe von `jax.grad` wurde die exakte analytische Ableitung der Fehlerfunktion (MSE zur Zielentfernung von genau 150,0 Metern) bezüglich der Anfangsgeschwindigkeit $v_{initial}$ bestimmt.
+
+### 2. Optimierungsergebnisse
+* **Startwert:** $v = 10,0$ m/s
+* **Optimierte Anfangsgeschwindigkeit:** $v_{opt} \approx 81,2519$ m/s
+* **Erreichte Endentfernung:** Exakt `150,0000` Meter (Fehler = 0,0e+00 Meter) in weniger als 20 Gradientenabstiegsschritten mit einer Lernrate von $0,1$.
+
+### 3. Unterschied zwischen `jax.grad` und Finiten Differenzen
+Die Methode der **Finiten Differenzen** ($\frac{f(x+h)-f(x)}{h}$) ist eine rein numerische Näherung. Sie ist extrem anfällig für Rundungsfehler (wenn $h$ zu klein ist) oder Diskretisierungsfehler (wenn $h$ zu groß ist) und erfordert für $N$ Variablen mindestens $N+1$ Funktionsaufrufe. 
+**`jax.grad`** hingegen nutzt das **Automatische Differenzieren (Reverse-Mode)**. Es berechnet über den Berechnungsbaum mittels der Kettenregel die exakte analytische Ableitung bis auf Maschinengenauigkeit. Zudem können die Gradienten für beliebig viele Eingangsvariablen in einem einzigen Rückwärtspass bestimmt werden, was numerisch exakt und um Größenordnungen effizienter ist.
+
+---
+
+## Exercise 4: Agentic Refactoring for the Horizon (Flax)
+
+### 1. Implementierung des MLPs (`src/flax_core.py`)
+In Zusammenarbeit mit unserem KI-Agenten "Observer-Prime" wurde ein Multi-Layer Perceptron (MLP) mithilfe des JAX-native Frameworks **Flax Linen** implementiert.
+
+### 2. Flax: Explizite Zustandstrennung vs. Keras
+Im Gegensatz zu traditionellen Frameworks wie Keras (bei denen die Parameter als veränderlicher Zustand direkt in den Schichten wie `model.weights` gekapselt sind), arbeitet Flax streng funktional und zustandslos:
+* **Statische Struktur:** Die Klasse `MultiLayerPerceptron` stellt lediglich eine Strukturdefinition (Computational Blueprint) dar und speichert selbst keinerlei Gewichte oder Zustand.
+* **Explizite Initialisierung:** Über `variables = model.init(PRNGKey, dummy_input)` werden die Gewichte extern in einem unveränderlichen PyTree (einem verschachtelten Wörterbuch) generiert und zurückgegeben.
+* **Explizite Berechnung:** Der Vorwärtspass erfolgt über `outputs = model.apply(variables, inputs)`, wobei die Gewichte bei jedem Aufruf als Argument übergeben werden müssen.
+
+Diese saubere Trennung von Zustand und computationalem Graph ermöglicht es JAX, neuronale Netze als reine mathematische Funktionen zu optimieren und nahtlos mit JAX-Transformationen wie `jit`, `vmap` und `grad` zu verknüpfen.
