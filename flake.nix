@@ -18,6 +18,8 @@
           python311
           stdenv.cc.cc.lib
           zlib
+          pandoc
+          typst
         ];
 
         shellHook = ''
