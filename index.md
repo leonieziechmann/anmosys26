@@ -295,3 +295,87 @@ Im Vergleich zu unserem trainierten PINN bieten Fourier Neural Operators (FNOs) 
 3. **Zero-Shot-Generalisierung & Gitterunabhängigkeit:**  
    Da FNOs ihre Faltungs-Kernel im kontinuierlichen Frequenzraum parametrisieren, sind sie inhärent *gitterunabhängig*. Ein FNO kann auf einem groben Simulationsgitter trainiert und ohne Genauigkeitsverlust auf einem beliebig feinen Gitter evaluiert werden. Dies ermöglicht **"Zero-Shot"-Vorhersagen**: Nach einmaliger Operator-Internalisierung kann das FNO für völlig neue, ungefeuerte Anfangsbedingungen die zeitliche Entwicklung in Bruchteilen einer Millisekunde vorhersagen, ohne dass jemals wieder ein Trainingslauf gestartet werden muss.
 
+---
+
+# Problem Set 6: Project Genesis – The Chaos Engine (Week 6)
+**Datum:** 1. Juni 2026
+
+## Exercise 1: The Antiquated Circle (Classical NumPy Pi Estimation)
+
+### 1. Simulations-Ergebnisse & Rechenzeit
+Die klassische Monte-Carlo-Simulation zur Schätzung der Kreiszahl $\pi$ wurde mit 5.000.000 Zufallspunkten mittels des zustandsbehafteten `numpy.random.uniform`-Generators auf der CPU durchgeführt.
+* **Zugehöriges Skript:** `genesis-oracle/src/classical_pi.py`
+* **Geschätztes $\pi$:** 3.141720
+* **Berechnungszeit (Generierung & Distanzprüfung):** ca. 0.3440 Sekunden
+
+### 2. Geometrischer Konvergenz-Plot (`data/classical_pi_disp.png`)
+Der Plot zeigt die Verteilung einer Teilmenge von 10.000 Punkten, farblich codiert nach ihrer Lage innerhalb (blau) oder außerhalb (rot) des Einheitskreisbogens:
+
+![Geometrischer Pi-Schätzungs-Scatterplot](data/classical_pi_disp.png)
+
+---
+
+## Exercise 2: The Quantum Leap (The JAX Monte Carlo Engine)
+
+### 1. Implementierung der Umsatzsimulation (`src/monte_carlo.py`)
+Unter Nutzung der rein funktionalen JAX-Infrastruktur haben wir eine massiv-parallelisierte Umsatzsimulation für ein Deep-Tech-Unternehmen implementiert. Die stochastischen Variablen sind:
+* **Marktnachfrage (D):** $D \sim \mathcal{N}(1000, 150^2)$
+* **Produktionskosten (C):** $\ln(C) \sim \mathcal{N}(5.5, 0.3^2)$
+* **Strafzahlungsrate (R):** $R \sim \mathcal{U}(0.05, 0.25)$
+
+Der Netto-Jahresumsatz wird über folgende Gleichung berechnet:
+$$\text{Revenue} = (D \times 150.0) - C \times (1.0 - R)$$
+
+### 2. Simulations- und Profiling-Ergebnisse (N = 1.000.000 Pfade)
+* **Erwarteter Umsatz (Expected Revenue):** 149.751,70 €
+* **Value-at-Risk (VaR 95%):** 112.734,47 €
+* **Cold Run Time (Kompilierung & Ausführung):** 1,388695 Sekunden
+* **Warm Run Time (Reine XLA-Ausführung):** 0,303794 Sekunden
+* **XLA-Kompilierungsoverhead:** 1,084901 Sekunden (ca. 78,1%)
+* **Warm-Beschleunigungsfaktor (Speedup):** 4,57-fache Beschleunigung
+* **XLA-Durchsatz (Warm):** 3.291.708,18 Pfade/Sekunde
+
+### 3. Umsatzverteilung (`data/revenue_dist.png`)
+Die nachfolgende Grafik zeigt die Häufigkeitsverteilung des Netto-Jahresumsatzes mit dem erwarteten Umsatz (schwarze Linie) und dem 95%-Risk-Schwellenwert (rote gestrichelte Linie):
+
+![Umsatzverteilung](data/revenue_dist.png)
+
+---
+
+## Exercise 3: Agentic Automation via Antigravity Skills
+
+### 1. Stresstest-Ergebnisse der Produktionskosten (Subagent-Alpha)
+Unser autonomer Subagent-Alpha führte einen systematischen Stresstest der Standardabweichung ($\sigma_C$) der Log-Normal-Kosten durch, um den genauen Punkt zu finden, an dem das Unternehmen insolvent wird (d.h. der $VaR_{95\%}$ unter 0 sinkt).
+* **Kritischer Volatilitätsgrenzwert ($\sigma_C$):** 4,00 (Kosten-Varianz $\sigma_C^2 = 16,00$)
+* **Erwarteter Umsatz bei $\sigma_C = 4,00$:** -260.344,20 €
+* **VaR 95% bei $\sigma_C = 4,00$:** -5.420,90 € (Insolvenzeintritt)
+
+Da die Produktionskosten log-normalverteilt sind, wächst die Schwere der extremen Kostenüberschreitungen (Right-Tail-Risiko) exponentiell mit steigender Volatilität, was das Unternehmen strukturell ruiniert.
+
+### 2. JAX-Profiling-Erkenntnisse (Subagent-Beta)
+Subagent-Beta analysierte den Performance-Unterschied zwischen dem Tracing-Lauf und dem rein XLA-optimierten Lauf. Der hohe Kompilierungsoverhead im Cold-Run (78,1%) amortisiert sich extrem schnell bei wiederholten Aufrufen, da der Warm-Lauf über 3,29 Millionen stochastische Pfade pro Sekunde berechnen kann. Die vollständigen detaillierten Analysen der beiden Agenten sind im Bericht [Swarm_Stress_Report.md](docs/Swarm_Stress_Report.md) dokumentiert.
+
+---
+
+## Exercise 4: Boss Fight – Defeating the Black Swan (Markov Chains)
+
+### 1. Makroökonomische Simulation mit jax.lax.scan (`src/markov_boss.py`)
+Zur Modellierung der makroökonomischen Bedingungen (Staat 0: Bullenmarkt, Staat 1: Stagnation, Staat 2: Katastrophale Rezession) haben wir das **Modul Alpha (The Matrix Carrier)** implementiert. Der Systemzustand wird als aggregierter Wahrscheinlichkeitsvektor über eine 365-tägige Zeitachse mittels `jax.lax.scan` fortgeschrieben.
+
+### 2. Der Schwarze Schwan (The Black Swan Sabotage: Tag 180-190)
+Am Tag 180 bricht eine unerwartete globale Finanzkrise aus, die exakt 10 Tage andauert. Die Übergangsmatrix $P$ wird für diesen Zeitraum modifiziert, sodass 80% der Übergangsmasse von Staat 0 und Staat 1 direkt in den katastrophalen Rezessionsstaat 2 geleitet werden. Nach Tag 190 normalisiert sich der Markt wieder auf seine Basisübergangsmatrix.
+
+* **Zustandsverteilung am Tag 365 (Erholung):**
+  - **Bullenmarkt:** 34,57%
+  - **Stagnation:** 38,30%
+  - **Rezession:** 27,13%
+
+### 3. Verlauf der Marktstaaten (`data/markov_boss.png`)
+Die folgende Grafik visualisiert den kontinuierlichen zeitlichen Verlauf der Wahrscheinlichkeitsverteilungen der drei makroökonomischen Zustände sowie das schattierte Krisenfenster des Schwarzen Schwans:
+
+![Markov Chain State Distribution](data/markov_boss.png)
+
+### 4. Cashflow-Kollaps bei Systemkopplung
+Würde man die stochastischen Variablen für Nachfrage ($D$) und Strafzahlung ($R$) aus Exercise 2 direkt an diese volatile Markov-Umgebung koppeln, so würde die Netto-Liquidität während des Rezessionsschocks (Tag 180-190) schlagartig kollabieren. Der sprunghafte Anstieg der Wahrscheinlichkeit für Staat 2 auf über 80% würde eine massive Kontraktion der Nachfrage und eine extreme Steigerung der regulatorischen Strafzahlungen auslösen. Da die Produktionskosten durch die Log-Normal-Verteilung ohnehin rechtsschiefe Ausreißer besitzen, würden die Gewinnmargen instantan vernichtet und der Value-at-Risk ($VaR_{95\%}$) würde tief ins Negative stürzen, was zur Zahlungsunfähigkeit führt.
+
+
