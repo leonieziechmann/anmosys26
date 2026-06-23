@@ -1,0 +1,30 @@
+{
+  "name": "simulate_mandelbrot",
+  "description": "Runs a JAX-accelerated Mandelbrot simulation on the specified center coordinates and zoom factor. Returns visual complexity and Shannon entropy metrics.",
+  "parameters": {
+    "type": "OBJECT",
+    "properties": {
+      "center_real": {
+        "type": "NUMBER",
+        "description": "Real coordinate of the center of the viewport."
+      },
+      "center_imag": {
+        "type": "NUMBER",
+        "description": "Imaginary coordinate of the center of the viewport."
+      },
+      "zoom": {
+        "type": "NUMBER",
+        "description": "Zoom factor (e.g. 1.5 for global view, >= 15000 for close-up details)."
+      },
+      "max_iterations": {
+        "type": "INTEGER",
+        "description": "Maximum number of iterations for the escape calculation. Defaults to 500."
+      }
+    },
+    "required": [
+      "center_real",
+      "center_imag",
+      "zoom"
+    ]
+  }
+}

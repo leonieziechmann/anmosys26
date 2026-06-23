@@ -663,3 +663,61 @@ Ein offline-fähiger Dokumentenindex ordnet der aktuellen Warteschlangenlänge d
 
 **Antwort:** Der RAG-basierte Ansatz entkoppelt die regulatorische Logik (SOPs) vollständig von den Modellgewichten. Wenn sich Fabrikvorschriften oder Grenzwerte ändern, muss das Modell nicht neu trainiert werden. Es genügt, die Textdokumente in der lokalen Wissensdatenbank (SOP_DATABASE) anzupassen. Das Edge-Modell liest die aktualisierte Vorschrift im Prompt-Kontext und passt sein Regelungsverhalten sofort und ohne zusätzliche Trainingskosten an.
 
+---
+
+# Problem Set 9: Project Genesis – The Autonomous Engineer
+**Datum:** 22. Juni 2026
+
+## Exercise 1: The Manual Cartographer (Pure Model)
+
+### 1. Simulations-Metriken im Verlauf (3 Schritte):
+- **Schritt 0 (Global View - Zoom 1.5x):**
+  - Center: $c = -0.5 + 0.0i$
+  - Entropy: 0.8722
+  - Boundary Complexity: 0.6235
+- **Schritt 1 (Zoom 10x):**
+  - Center: $c = -0.74 + 0.13i$
+  - Entropy: 0.7887
+  - Boundary Complexity: 0.2310
+- **Schritt 2 (Zoom 100x):**
+  - Center: $c = -0.743 + 0.131i$
+  - Entropy: 1.5711
+  - Boundary Complexity: 0.6243
+- **Schritt 3 (Zoom 1000x):**
+  - Center: $c = -0.7436 + 0.1318i$
+  - Entropy: 1.4444
+  - Boundary Complexity: 0.9954
+
+### 2. Antwort zur Latenz und Benutzerfreundlichkeit (Human in the Loop):
+- **Latenz:** Die manuelle Koordination ist durch die menschliche Reaktionszeit extrem verlangsamt (Minuten pro Schritt). Der Mensch dient als langsame analoge Brücke, um die Komplexitätswerte abzulesen, manuell neue Koordinaten in das Skript einzutragen, zu kompilieren und auszuführen.
+- **Skalierbarkeit & Fehlerrisiko:** Die manuelle Durchführung ist extrem fehleranfällig (Tippfehler bei langen Gleitkommazahlen) und skaliert nicht. Bei tiefen Vergrößerungen (z.B. $> 15.000x$), die Dutzende von Schritten erfordern, ist eine manuelle Suche unmöglich.
+
+### 3. Ergebnis-Plots des Fraktals:
+- **Globaler Überblick (Zoom 1.5x):**
+  ![Mandelbrot Global View](data/mandelbrot_global.png)
+
+- **Seahorse Valley Detail (Zoom 15000x):**
+  ![Mandelbrot Seahorse Valley](data/mandelbrot_seahorse.png)
+
+---
+
+## Exercise 2: Closed-Loop Tool Calling (Model + Tools)
+
+Das Skript `genesis-oracle/src/exercise2.py` implementiert eine autonome ReAct-Schleife mit dem `google-genai` SDK. Die Methode `simulate_mandelbrot` ist als Tool deklariert. Das Modell liest die Auswertung der physikalischen Metriken, generiert logische Denkschritte (Thoughts) und ruft das JAX-Simulations-Tool autonom auf, bis das Ziel (Seahorse Valley bei $\ge 15.000x$ Zoom) erreicht ist.
+
+---
+
+## Exercise 3: Capsule Packaging: The Gemma-Skill (Model + Tools + Skills)
+
+Das autonome Verhalten wurde als Gemma-Skill Kapsel unter `skills/mandelbrot_explorer/` modular verpackt:
+- `SKILL.md` definiert die systemseitigen Instruktionen und YAML-Metadaten.
+- `tools/mandelbrot_schema.json` definiert das JSON-Schema für die Funktionsaufrufe.
+- `scripts/mandelbrot_solver.py` enthält die JAX-beschleunigte Physik-Engine.
+- Das Skript `genesis-oracle/src/exercise3.py` fungiert als dynamic Bootstrap-Loader (`GemmaSkillLoader`).
+
+### Antwort zur System-Wartbarkeit in Multi-Agenten-Umgebungen:
+- **Modulare Kapselung:** Durch das Verpacken von Prompts, Schemas und Skripten in einer Kapsel bleibt die Logik isoliert. Das verhindert Prompt-Bloat im globalen Agenten-Kontext.
+- **Wiederverwendbarkeit & Portabilität:** Andere Agenten können die Kapsel bei Bedarf dynamisch zur Laufzeit laden und registrieren, um die Mandelbrot-Sondierungsfähigkeit zu erwerben.
+- **Wartung & Versionierung:** Fehlerbehebungen in der Simulation (Skripte) oder Verfeinerungen der Suchstrategie (Prompts) werden ausschließlich innerhalb des Skill-Ordners vorgenommen, ohne dass der Kern-Agent neu programmiert oder deployed werden muss.
+
+
