@@ -1,0 +1,29 @@
+{
+  "name": "compile_markdown_to_pdf",
+  "description": "Compiles a Markdown file to a PDF file using pandoc and the typst engine, configuring a fallback font to avoid empty fallback font list issues in WSL/Nix.",
+  "parameters": {
+    "type": "OBJECT",
+    "properties": {
+      "input_path": {
+        "type": "STRING",
+        "description": "Absolute path to the input Markdown (.md) file."
+      },
+      "output_path": {
+        "type": "STRING",
+        "description": "Absolute path to the output PDF (.pdf) file."
+      },
+      "font": {
+        "type": "STRING",
+        "description": "The mainfont variable to override. Defaults to 'Liberation Sans'."
+      },
+      "working_dir": {
+        "type": "STRING",
+        "description": "The directory from which relative image paths inside the Markdown are resolved. Defaults to the directory containing the input file."
+      }
+    },
+    "required": [
+      "input_path",
+      "output_path"
+    ]
+  }
+}

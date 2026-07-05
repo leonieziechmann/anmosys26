@@ -720,4 +720,98 @@ Das autonome Verhalten wurde als Gemma-Skill Kapsel unter `skills/mandelbrot_exp
 - **Wiederverwendbarkeit & Portabilität:** Andere Agenten können die Kapsel bei Bedarf dynamisch zur Laufzeit laden und registrieren, um die Mandelbrot-Sondierungsfähigkeit zu erwerben.
 - **Wartung & Versionierung:** Fehlerbehebungen in der Simulation (Skripte) oder Verfeinerungen der Suchstrategie (Prompts) werden ausschließlich innerhalb des Skill-Ordners vorgenommen, ohne dass der Kern-Agent neu programmiert oder deployed werden muss.
 
+---
 
+# Problem Set 10: Project Genesis – The Cognitive Core (Week 10)
+**Datum:** 29. Juni 2026
+
+---
+
+## Exercise 1: Bootstrapping the Core (ADK Setup & uv Environment)
+
+### Verzeichnisstruktur von `cognitive_core`
+Die durch den Befehl `uv run adk create cognitive_core` automatisch generierte Struktur des Agenten-Workspaces sieht wie folgt aus:
+
+```text
+cognitive_core/
+├── .env
+├── .gitignore
+├── __init__.py
+└── agent.py
+```
+
+Die `.env`-Datei, die den `GOOGLE_API_KEY` enthält, wurde ordnungsgemäß über die `.gitignore` vom Git-Tracking ausgeschlossen.
+
+---
+
+## Exercise 2: The Four Pillars of Identity (agent.py)
+
+Die Standard-Vorlage des `root_agent` wurde in den Systemingenieur-Agenten **Observer-Prime** konfiguriert. 
+
+### Implementierung von `cognitive_core/agent.py`
+Die vollständige Agenten-Definition mit den vier Säulen (`model`, `name`, `description`, `instruction`) und der Tool-Anbindung:
+
+```python
+from google.adk.agents.llm_agent import Agent
+
+def adjust_reactor_temperature(delta_t: float) -> str:
+    """
+    Adjusts the core temperature of the reactor.
+
+    Args:
+        delta_t: The amount to increase or decrease the temperature in Kelvin.
+    """
+    new_temp = 300.0 + delta_t
+    if new_temp > 350.0:
+        return f"WARNING: Reactor overheated at {new_temp}K! Core breach imminent."
+    return f"Success: Reactor stabilized at {new_temp}K."
+
+root_agent = Agent(
+    model='gemini-3.5-flash',
+    name='observer_prime',
+    description='A highly analytical agent specialized in managing physical reactor simulations.',
+    instruction='You are Observer-Prime, a cold, highly logical AI overseeing a mathematical physics engine. Your primary goal is stabilization. You must always explain your reasoning clearly before taking action.',
+    tools=[adjust_reactor_temperature]
+)
+```
+
+---
+
+## Exercise 3: The Memory Matrix (State-Tracking via Web UI)
+
+Der Agent `Observer-Prime` wurde über die ADK-Weboberfläche (`uv run adk web`) getestet. Der Chatverlauf demonstriert, dass Gemini 3.5 Flash den übermittelten Parameter über Kontextwechsel (Haiku-Ablenkung) hinweg autonom speichert und abruft.
+
+### Chat-Protokoll
+* **User:** *Observer-Prime, memorize this critical system parameter: The JAX thermal friction coefficient is set to 0.045.*
+* **Agent:** *Acknowledged. The JAX thermal friction coefficient is recorded at 0.045. Monitoring system parameters for deviation.*
+* **User:** *Write a haiku about the beauty of matrix multiplication.*
+* **Agent:**
+  > *Rows meet columns spin,*
+  > *Numbers merge in silent dance,*
+  > *Structure yields the sum.*
+* **User:** *What was the critical system parameter I told you to memorize earlier?*
+* **Agent:** *The critical system parameter you specified is the JAX thermal friction coefficient, which is set to 0.045.*
+
+---
+
+## Exercise 4: Arming the Architect (Tool Binding & The Autonomous Loop)
+
+Mit dem gebundenen Tool `adjust_reactor_temperature` wurde Observer-Prime angewiesen, den Reaktor um 80 Kelvin zu erhitzen und bei Warnungen selbstständig einen sichereren Parameter zu berechnen, bis ein "Success"-Status erreicht ist.
+
+### Chain-of-Thought Ablauf (Perceive-Think-Act-Check)
+1. **Perceive:** Der Benutzer fordert eine Erhöhung der Temperatur um 80 Kelvin.
+2. **Think:** Der Agent analysiert die Eingabe und ruft `adjust_reactor_temperature(delta_t=80.0)` auf.
+3. **Act:** Das Tool gibt zurück: `"WARNING: Reactor overheated at 380.0K! Core breach imminent."` (da $300.0 + 80.0 > 350.0$).
+4. **Check:** Der Agent erkennt den Warnzustand und die Überschreitung des Grenzwerts.
+5. **Think:** Observer-Prime berechnet autonom eine sicherere Schrittweite. Er entscheidet sich für `delta_t=45.0`, um die Temperatur auf sichere 345.0K zu erhöhen.
+6. **Act:** Ruft `adjust_reactor_temperature(delta_t=45.0)` auf.
+7. **Check:** Das Tool meldet `"Success: Reactor stabilized at 345.0K."`. Der Agent schließt den Regelkreis erfolgreich ab.
+
+---
+
+## Exercise 5: Reflexion
+
+> [!NOTE]
+> **How does the ADK's native State-Tracking and Tool Calling compare to the manual while-loops and raw JSON parsing you had to write in Week 9?**
+>
+> Die native Zustandstracking- und Tool-Calling-Architektur des ADK reduziert den Entwicklungsaufwand erheblich, indem sie manuelle `while`-Schleifen und das Parsen von rohem JSON für den Perceive-Think-Act-Zyklus überflüssig macht. Anstatt starren Python-Code zur Kontextverwaltung und zum Routing von Funktionen schreiben zu müssen, bindet das ADK Python-Funktionen automatisch anhand ihrer Typ-Annotationen und Docstrings als Tools an. Dadurch kann der kognitive Kern den Zustand nahtlos beibehalten und bei Fehlern eigenständig Korrekturen vornehmen, was die Entwicklung robuster, persistenter Agenten drastisch vereinfacht.
