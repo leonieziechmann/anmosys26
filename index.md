@@ -815,3 +815,132 @@ Mit dem gebundenen Tool `adjust_reactor_temperature` wurde Observer-Prime angewi
 > **How does the ADK's native State-Tracking and Tool Calling compare to the manual while-loops and raw JSON parsing you had to write in Week 9?**
 >
 > Die native Zustandstracking- und Tool-Calling-Architektur des ADK reduziert den Entwicklungsaufwand erheblich, indem sie manuelle `while`-Schleifen und das Parsen von rohem JSON für den Perceive-Think-Act-Zyklus überflüssig macht. Anstatt starren Python-Code zur Kontextverwaltung und zum Routing von Funktionen schreiben zu müssen, bindet das ADK Python-Funktionen automatisch anhand ihrer Typ-Annotationen und Docstrings als Tools an. Dadurch kann der kognitive Kern den Zustand nahtlos beibehalten und bei Fehlern eigenständig Korrekturen vornehmen, was die Entwicklung robuster, persistenter Agenten drastisch vereinfacht.
+
+---
+
+# Problem Set 11: Project Genesis - The Scholar-Prime (Week 11)
+**Datum:** 10. Juli 2026
+
+## Exercise 1: Setting up the Science Skills
+
+### 1. Klonen des Repositorys
+Wir haben das offizielle DeepMind `science-skills` Repository geklont:
+```bash
+git clone https://github.com/google-deepmind/science-skills.git
+```
+
+### 2. Synchronisieren der Umgebung
+Wir haben im Verzeichnis `science-skills/skills/literature_search_openalex` die Abhängigkeiten über `uv` synchronisiert:
+```bash
+uv sync
+```
+
+### 3. Ausführung der Testabfrage
+Wir haben die Identität von Geoffrey Hinton über die CLI aufgelöst:
+```bash
+SSL_CERT_FILE=$(uv run --with certifi python -c "import certifi; print(certifi.where())") \
+  uv run scripts/openalex_cli.py resolve authors "Geoffrey Hinton"
+```
+
+**Ergebnis-Ausgabe (Auszug):**
+```json
+[
+  {
+    "id": "https://openalex.org/A5108093963",
+    "display_name": "Geoffrey E. Hinton",
+    "hint": 385
+  }
+]
+```
+Der aufgelöste OpenAlex-Autoren-ID lautet: `https://openalex.org/A5108093963`.
+
+---
+
+## Exercise 2: Building the Literature Retrieval Agent ('agent.py')
+
+Wir haben den Agenten `scholar_prime` über das ADK initialisiert. Aufgrund von temporären 503-Kapazitätsfehlern der API beim Modell `gemini-3.5-flash` wurde der Agent für die produktive Ausführung auf `gemini-2.5-flash` konfiguriert.
+
+### Implementierung von `scholar_prime/agent.py`
+```python
+import os
+import subprocess
+import certifi
+from google.adk.agents.llm_agent import Agent
+
+def search_arxiv(query: str, max_results: int = 5) -> str:
+    """
+    Searches the arXiv scientific literature database for relevant publications.
+    """
+    script_path = "/home/xayah/Documents/anmosys26/science-skills/skills/literature_search_arxiv/scripts/search_arxiv.py"
+    env = os.environ.copy()
+    env["SSL_CERT_FILE"] = certifi.where()
+    
+    cmd = [
+        "uv", "run", script_path,
+        "--query", query,
+        "--max_results", str(max_results)
+    ]
+    
+    try:
+        res = subprocess.run(cmd, capture_output=True, text=True, check=True, env=env)
+        return res.stdout
+    except subprocess.CalledProcessError as e:
+        return f"Error executing search_arxiv CLI: {e.stderr}\nOutput: {e.output}"
+
+root_agent = Agent(
+    model='gemini-2.5-flash',
+    name='scholar_prime',
+    description='An academic research agent specialized in querying scientific databases and extracting material parameters.',
+    instruction=(
+        'You are Scholar-Prime, a professional academic research agent. Your core expertise is '
+        'searching scientific literature databases, evaluating abstract relevance for physical '
+        'and thermodynamic parameters, extracting relevant simulation formulas or coefficients, '
+        'and presenting them systematically. Whenever you present findings from a paper, you '
+        'MUST always state the DOI or direct URL reference. Maintain high academic rigor and '
+        'objective reporting in all responses.'
+    ),
+    tools=[search_arxiv]
+)
+```
+
+---
+
+## Exercise 3: Automated Search & Downloader (Tool Binding)
+
+Wir haben eine Python-Wrapper-Funktion `search_arxiv` geschrieben, die das ArXiv-Suchskript aus dem DeepMind-Repository aufruft und als Tool an den Agenten bindet.
+Bei der Abfrage:
+> *Scholar-Prime, search arXiv for papers on 'thermodynamic simulation parameters for advanced fission reactors'. Identify the most relevant paper and summarize its abstract.*
+
+Rief der Agent das Tool `search_arxiv` erfolgreich auf und fasste das Abstract der am besten passenden Arbeit ("Applications of Fission") zusammen. Der Testlauf wurde über die ADK-Weboberfläche durchgeführt und per Screenshot dokumentiert:
+
+![Scholar-Prime Web UI Run](scholar_prime_webui.png)
+
+---
+
+## Exercise 4: Parameter Extraction & Verification
+
+Wir haben ein Python-Skript `extract_parameters.py` implementiert, das die Literatur-Suche durchführt, das Abstract des relevantesten Artikels ("UO2/BeO interfacial thermal resistance and its effect on fuel thermal conductivity") extrahiert, es an eine strukturierte Extraktionsfunktion übergibt (unter Verwendung von Gemini und Pydantic-Schemas) und die Parameter als JSON speichert.
+
+### Extrahierte Parameter (`simulation_parameters.json`)
+```json
+{
+  "paper_title": "UO2/BeO interfacial thermal resistance and its effect on fuel thermal conductivity",
+  "doi": "10.1016/j.anucene.2020.108102",
+  "url": "https://arxiv.org/pdf/2006.11705v1",
+  "parameters": [
+    {
+      "name": "Interfacial Thermal Resistance (ITR)",
+      "value": "order of 10^-9",
+      "unit": "m^2K/W",
+      "context": "predicted by DMM for UO2/BeO interface"
+    },
+    {
+      "name": "Interfacial Thermal Resistance (ITR)",
+      "value": "order of 10^-6 - 10^-5",
+      "unit": "m^2K/W",
+      "context": "required for UO2 containing continuous BeO to match experimental data"
+    }
+  ]
+}
+```
+

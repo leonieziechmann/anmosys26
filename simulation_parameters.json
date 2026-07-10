@@ -1,0 +1,19 @@
+{
+  "paper_title": "UO2/BeO interfacial thermal resistance and its effect on fuel thermal conductivity",
+  "doi": "10.1016/j.anucene.2020.108102",
+  "url": "https://arxiv.org/pdf/2006.11705v1",
+  "parameters": [
+    {
+      "name": "Interfacial Thermal Resistance (ITR)",
+      "value": "order of 10^-9",
+      "unit": "m^2K/W",
+      "context": "predicted by DMM for UO2/BeO interface"
+    },
+    {
+      "name": "Interfacial Thermal Resistance (ITR)",
+      "value": "order of 10^-6 - 10^-5",
+      "unit": "m^2K/W",
+      "context": "required for UO2 containing continuous BeO to match experimental data"
+    }
+  ]
+}
