@@ -944,3 +944,35 @@ Wir haben ein Python-Skript `extract_parameters.py` implementiert, das die Liter
 }
 ```
 
+---
+
+# Problem Set 12: The Great Spreeland Logistics Sync
+**Datum:** 19. Juli 2026
+
+## Exercise 1: Protocol Architecture Design
+
+In dieser Übung haben wir die Protokollarchitektur zur Koordination der Spreeland-Logistik entworfen. Dabei kommen folgende Protokolle aus dem Agentic Protocol Stack zum Einsatz:
+
+1. **Infrastructure Discovery**: Um den Echtzeit-Brückenstatus aus der PostgreSQL-Datenbank der Stadt abzufragen, verwendet der `Spreeland_Dispatcher`-Agent das **Model Context Protocol (MCP)**. Ein PostgreSQL-MCP-Server (z. B. `@spreeland/bridge-mcp-server`) stellt Abfragewerkzeuge als standardisierte Tools bereit, die der Agent dynamisch entdeckt und aufruft.
+2. **Expert Consultation**: Zur Abfrage des externen Wetter-Vorhersage-Agenten nutzen wir das **Agent-to-Agent (A2A)**-Protokoll. Es ermöglicht die standardisierte Entdeckung, Weiterleitung und Aufgaben-Delegation zwischen unabhängigen Agenten als Sub-Agenten im ADK-System.
+3. **Secure Fulfillment**: Der Großhandelskauf von 2 Tonnen Spreewälder Gurken wird über das **Universal Commerce Protocol (UCP)** zur Abwicklung des Einkaufs (Warenkorb, Kasse) und das **Agent Payments Protocol (AP2)** zur sicheren, kryptografisch verifizierbaren und vom Eigentümer autorisierten Zahlung durchgeführt.
+4. **Dynamic Visualization**: Zur Echtzeit-Visualisierung des Dashboards ohne React/Flutter-Code nutzen wir **AG-UI** für die bi-direktionale Event-Streaming-Verbindung und **A2UI** zur Generierung deklarativer JSON-UI-Komponenten, die der Client nativ rendert.
+
+---
+
+## Exercise 2: Implementing the Dispatcher Swarm
+
+Wir haben den Spreeland-Dispatcher unter Verwendung des `google-adk` Frameworks in Python implementiert. Das Skript bindet externe Experten-Subagenten (`weather_predictor`, `supplier_agent`) ein, konfiguriert den MCP-Dienst und stellt ein interaktives Streaming der Gedankenschritte und Tool-Aufrufe bereit. Ein lokaler Fallback-Modus erlaubt die Ausführung auch bei fehlender MCP-Verbindung.
+
+### Implementierung von `ps12/spreeland_dispatcher.py`
+[Python-Starter-Skript anzeigen](file:///home/xayah/Documents/anmosys26/ps12/spreeland_dispatcher.py)
+
+---
+
+## Exercise 3: UI Schema Definition (A2UI)
+
+Zur Visualisierung des Lieferstatus wird eine A2UI-Komponentendefinition im flachen Adjazenzlisten-Format verwendet.
+
+### A2UI-JSON-Payload (`ps12/a2ui_schema.json`)
+[JSON-Schema anzeigen](file:///home/xayah/Documents/anmosys26/ps12/a2ui_schema.json)
+

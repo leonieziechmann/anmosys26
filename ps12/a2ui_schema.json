@@ -1,0 +1,108 @@
+{
+  "updateComponents": {
+    "components": [
+      {
+        "id": "delivery-status-card",
+        "component": "Card",
+        "child": "card-layout"
+      },
+      {
+        "id": "card-layout",
+        "component": "Column",
+        "children": [
+          "title-label",
+          "status-indicator",
+          "progress-row",
+          "details-row",
+          "refresh-button"
+        ]
+      },
+      {
+        "id": "title-label",
+        "component": "Text",
+        "text": "Spreeland Logistics Sync (Burg Hub)",
+        "style": {
+          "fontSize": "18px",
+          "fontWeight": "bold",
+          "color": "#1b4d3e"
+        }
+      },
+      {
+        "id": "status-indicator",
+        "component": "Row",
+        "children": ["status-dot", "status-value"]
+      },
+      {
+        "id": "status-dot",
+        "component": "Icon",
+        "name": "circle",
+        "color": "#4caf50"
+      },
+      {
+        "id": "status-value",
+        "component": "Text",
+        "text": "Status: In Transit (En Route to Cottbus)",
+        "style": {
+          "fontSize": "14px",
+          "fontWeight": "500"
+        }
+      },
+      {
+        "id": "progress-row",
+        "component": "Row",
+        "children": ["progress-label", "progress-pct"]
+      },
+      {
+        "id": "progress-label",
+        "component": "Text",
+        "text": "Delivery Progress: ",
+        "style": {
+          "fontSize": "14px"
+        }
+      },
+      {
+        "id": "progress-pct",
+        "component": "Text",
+        "text": "65%",
+        "style": {
+          "fontSize": "14px",
+          "fontWeight": "bold",
+          "color": "#4caf50"
+        }
+      },
+      {
+        "id": "details-row",
+        "component": "Row",
+        "children": ["cargo-label", "route-label"]
+      },
+      {
+        "id": "cargo-label",
+        "component": "Text",
+        "text": "Cargo: 2 Tons Organic Gherkins | ",
+        "style": {
+          "fontSize": "12px",
+          "color": "#666"
+        }
+      },
+      {
+        "id": "route-label",
+        "component": "Text",
+        "text": "Route: Burg -> Cottbus (Bridges Open)",
+        "style": {
+          "fontSize": "12px",
+          "color": "#666"
+        }
+      },
+      {
+        "id": "refresh-button",
+        "component": "Button",
+        "label": "Re-Check Bridge Status",
+        "onClick": "triggerBridgeCheck",
+        "style": {
+          "backgroundColor": "#1b4d3e",
+          "color": "#ffffff"
+        }
+      }
+    ]
+  }
+}
