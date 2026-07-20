@@ -7,6 +7,7 @@ Problem Set 5: Project Genesis - The Fabric of Reality.
 
 import sys
 import os
+import numpy as np
 import jax
 import jax.numpy as jnp
 import flax.linen as nn

@@ -14,6 +14,23 @@
       "value": "order of 10^-6 - 10^-5",
       "unit": "m^2K/W",
       "context": "required for UO2 containing continuous BeO to match experimental data"
+    },
+    {
+      "name": "JAX Swarm Damping Beta",
+      "value": "0.18",
+      "unit": "dimensionless",
+      "context": "Stabilized after anomaly at t=4.0s"
+    },
+    {
+      "name": "JAX Swarm Damping Beta",
+      "value": "0.18",
+      "unit": "dimensionless",
+      "context": "Stabilized after anomaly at t=4.0s"
     }
-  ]
+  ],
+  "jax_state": {
+    "damping_beta": 0.18,
+    "anomaly_timestamp": 4.0,
+    "stabilized": true
+  }
 }

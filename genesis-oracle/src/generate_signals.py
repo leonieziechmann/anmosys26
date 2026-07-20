@@ -4,6 +4,15 @@ import random
 import numpy as np
 import matplotlib.pyplot as plt
 
+def inject_telemetry_disturbance(t, signal):
+    """
+    Injects a high-frequency stochastic noise/disturbance in the datastream around t = 4.25s.
+    """
+    disturbance_mask = (t >= 4.0) & (t <= 4.5)
+    noise = 1.5 * np.sin(2 * np.pi * 50 * t[disturbance_mask]) * np.random.normal(1.0, 0.2, np.sum(disturbance_mask))
+    signal[disturbance_mask] += noise
+    return signal
+
 def main():
     # Setup directories
     os.makedirs("data", exist_ok=True)

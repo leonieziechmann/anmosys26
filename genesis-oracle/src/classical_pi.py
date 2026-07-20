@@ -1,73 +1,76 @@
-import time
+import os
+import sys
 import numpy as np
 import matplotlib.pyplot as plt
 
+# Ensure local imports work correctly
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+from generate_signals import inject_telemetry_disturbance
+
+def simulate_damped_oscillator(t, beta, omega_0, x0=1.0, v0=0.0):
+    """
+    Simulates a damped harmonic oscillator using explicit Euler integration.
+    Equation: d2x/dt2 + 2*beta*dx/dt + w0^2*x = 0
+    """
+    dt = t[1] - t[0]
+    x = np.zeros_like(t)
+    v = np.zeros_like(t)
+    x[0] = x0
+    v[0] = v0
+    
+    for i in range(1, len(t)):
+        a = -2 * beta * v[i-1] - (omega_0 ** 2) * x[i-1]
+        v[i] = v[i-1] + a * dt
+        x[i] = x[i-1] + v[i-1] * dt
+    return x
+
 def main():
-    # Total points to generate
-    N = 5_000_000
+    print("Initializing Physics Data-Feed & Plotting (Damped Harmonic Oscillator)...")
     
-    # 1. Measure the exact wall-clock execution time of the generation and check process
-    start_time = time.perf_counter()
+    # Time vector (10 seconds, 1000 points)
+    t = np.linspace(0.0, 10.0, 1000)
     
-    # Generate points uniformly distributed between 0 and 1
-    x = np.random.uniform(0.0, 1.0, N)
-    y = np.random.uniform(0.0, 1.0, N)
+    # Parameters
+    beta = 0.15        # Initial weak damping factor (Agent A's first guess)
+    omega_0 = np.pi    # Fundamental frequency (w0 = pi)
     
-    # Compute squared Euclidean distance and check inside unit circle boundary
-    squared_distance = x**2 + y**2
-    inside_mask = squared_distance <= 1.0
+    # 1. Run simulation
+    signal = simulate_damped_oscillator(t, beta, omega_0)
     
-    execution_time = time.perf_counter() - start_time
+    # 2. Inject disturbance/stochastic noise around t = 4.25s
+    perturbed_signal = inject_telemetry_disturbance(t, signal.copy())
     
-    # Count points inside and calculate empirical Pi
-    N_inside = np.sum(inside_mask)
-    pi_estimate = 4.0 * N_inside / N
+    # 3. Create a high-quality, dark-themed visualization (Premium Aesthetics)
+    plt.style.use('dark_background')
+    fig, ax = plt.subplots(figsize=(12, 6), dpi=300)
     
-    print(f"Classical NumPy Pi Estimation:")
-    print(f"  Total samples (N): {N:,}")
-    print(f"  Samples inside:    {N_inside:,}")
-    print(f"  Estimated Pi:      {pi_estimate:.6f}")
-    print(f"  Execution Time:    {execution_time:.6f} seconds")
+    # Plot normal vs perturbed
+    ax.plot(t, perturbed_signal, color='#00e5ff', linewidth=2, label='Telemetry Signal (Perturbed)')
+    ax.plot(t, signal, color='#ff007f', linewidth=1.5, linestyle='--', alpha=0.6, label='Ideal Damped Oscillator')
     
-    # 2. Extract a random subset of 10,000 points for visualization
-    subset_size = 10_000
-    sub_x = x[:subset_size]
-    sub_y = y[:subset_size]
-    sub_inside = inside_mask[:subset_size]
+    # Highlight anomaly region
+    ax.axvspan(4.0, 4.5, color='#ff1744', alpha=0.15, label='Anomaly Event Horizon')
     
-    # Create high-quality visualization
-    plt.style.use('seaborn-v0_8-whitegrid')
-    fig, ax = plt.subplots(figsize=(8, 8), dpi=300)
+    # Premium labels & styling
+    ax.set_title('Telemetry Real-Time Analysis: Damped Harmonic Oscillator', fontsize=14, fontweight='bold', pad=15, color='#ffffff')
+    ax.set_xlabel('Time (seconds)', fontsize=11, labelpad=10, color='#e0e0e0')
+    ax.set_ylabel('Amplitude (x)', fontsize=11, labelpad=10, color='#e0e0e0')
     
-    # Scatter points inside (blue) and outside (red)
-    ax.scatter(sub_x[sub_inside], sub_y[sub_inside], color='#1e88e5', s=2, alpha=0.7, label='Innerhalb (Inside)')
-    ax.scatter(sub_x[~sub_inside], sub_y[~sub_inside], color='#e53935', s=2, alpha=0.7, label='Außerhalb (Outside)')
+    ax.grid(True, which='both', linestyle=':', linewidth=0.5, color='#424242')
+    ax.set_xlim(0, 10)
+    ax.set_ylim(-1.5, 1.5)
     
-    # Plot the quarter-circle boundary line
-    theta = np.linspace(0, np.pi/2, 200)
-    cx = np.cos(theta)
-    cy = np.sin(theta)
-    ax.plot(cx, cy, color='#263238', linewidth=2.5, linestyle='-', label='Einheitskreisrand ($x^2+y^2=1$)')
+    # Custom legend
+    legend = ax.legend(loc='upper right', frameon=True, facecolor='#121212', edgecolor='#333333')
+    plt.setp(legend.get_texts(), color='#e0e0e0')
     
-    # Label and title axes
-    ax.set_xlim(-0.02, 1.02)
-    ax.set_ylim(-0.02, 1.02)
-    ax.set_xlabel('x-Koordinate', fontsize=12, fontweight='bold', labelpad=10)
-    ax.set_ylabel('y-Koordinate', fontsize=12, fontweight='bold', labelpad=10)
-    ax.set_title(f'Klassische Monte-Carlo-Simulation zur $\\pi$-Bestimmung\nSchätzung: $\\pi \\approx$ {pi_estimate:.6f} | Laufzeit: {execution_time:.4f}s', 
-                 fontsize=13, fontweight='bold', pad=15)
-    
-    # Aspect ratio and grids
-    ax.set_aspect('equal')
-    ax.legend(loc='upper right', frameon=True, shadow=False, facecolor='white', edgecolor='#cfd8dc', framealpha=0.9, fontsize=10)
-    ax.grid(True, which='both', linestyle='--', linewidth=0.5, color='#cfd8dc')
-    
-    # Save the output figure to the data directory
-    plt.tight_layout()
-    output_path = '/home/xayah/Documents/anmosys26/data/classical_pi_disp.png'
-    plt.savefig(output_path, dpi=300, bbox_inches='tight')
+    # Save the output figure
+    os.makedirs('data', exist_ok=True)
+    output_path = 'data/anomaly_detection_plot.png'
+    plt.savefig(output_path, bbox_inches='tight', facecolor='#121212')
     plt.close()
-    print(f"Scatter plot saved to: {output_path}")
+    
+    print(f"Telemetry plot exported successfully to: {output_path}")
 
 if __name__ == '__main__':
     main()
