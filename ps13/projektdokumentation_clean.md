@@ -212,13 +212,13 @@ $$\text{Relativer } L_2 \text{ Fehler} = \frac{\| \hat{x}(t) - x_{\text{analytic
 ### 3.2 Grafische Darstellungen & Visualisierungen
 
 #### Abbildung 1: Quantitativer $L_2$-Fehlervergleich
-![L2 Error Benchmark](file:///home/xayah/Documents/anmosys26/ps13/l2_error_benchmark.png)
+![L2 Error Benchmark](ps13/l2_error_benchmark.png)
 
 #### Abbildung 2: Trajektorien-Stabilisierung im Vergleich zur Ground Truth
-![Trajectory Comparison](file:///home/xayah/Documents/anmosys26/ps13/trajectory_comparison.png)
+![Trajectory Comparison](ps13/trajectory_comparison.png)
 
 #### Abbildung 3: Parameter-Konsens & Residuen-Konvergenz des Peer-Reviews
-![Consensus Convergence](file:///home/xayah/Documents/anmosys26/ps13/consensus_convergence.png)
+![Consensus Convergence](ps13/consensus_convergence.png)
 
 ---
 
@@ -233,13 +233,13 @@ Das Live-Demo-Protokoll wurde in fünf modulare CLI-Komponenten unterteilt und n
 1. **Umgebungstest (`python src/oracle_ping.py`):**  
    Verifizierung des API-Zugriffs auf `Gemini 3.5 Flash` / Oracle via `GOOGLE_API_KEY`.
 2. **Störungsinjektion (`python src/generate_signals.py --inject-noise --output data/anomaly_detection_plot.png`):**  
-   Erzeugung eines hochfrequenten Störsignals ($50\,\mathrm{Hz}$ Rauschartefakt im Zeitfenster $t \in [4.0, 4.5]\,\mathrm{s}$) und Visualisierung im Dark-Mode-Design ([anomaly_detection_plot.png](file:///home/xayah/Documents/anmosys26/genesis-oracle/data/anomaly_detection_plot.png)).
+   Erzeugung eines hochfrequenten Störsignals ($50\,\mathrm{Hz}$ Rauschartefakt im Zeitfenster $t \in [4.0, 4.5]\,\mathrm{s}$) und Visualisierung im Dark-Mode-Design ([anomaly_detection_plot.png](genesis-oracle/data/anomaly_detection_plot.png)).
 3. **Multimodales Vision-Scanning (`python -m cognitive_core.agent --mode vision --input data/anomaly_detection_plot.png`):**  
    Agent A analysiert das Plot-Bild und generiert ein strukturiertes Anomalie-JSON (`data/anomaly_info.json`) mit Bounding-Box $[120, 45, 300, 210]$, Vertrauenswert $92\%$ und Parameter-Hypothese $\beta = 0.15, \omega = 2.10$.
 4. **Physik-Audit & Parameter-Konsens (`python -m scholar_prime.agent --audit data/anomaly_info.json`):**  
    Agent B liest die Hypothese ein, wertet den JAX ODE-Residuum-Loss aus ($\mathcal{L}_{\text{phys}} = 0.4821 > 0.0500$), detektiert die unphysikalische Divergenz und berechnet via JAX Auto-Diff den optimalen Korrekturvektor ($\beta_{\text{korrigiert}} = 0.4210, \omega_{\text{korrigiert}} = 2.0000$). Der Konsens wird in $4.2\,\mathrm{ms}$ im JAX-State (`simulation_parameters.json`) verankert.
 5. **Re-Plotting & Evaluierung (`python src/generate_plots.py --compare --config simulation_parameters.json`):**  
-   Visualisierung der stabilisierten Trajektorie im Vergleich zur Ground Truth ([trajectory_comparison.png](file:///home/xayah/Documents/anmosys26/genesis-oracle/data/trajectory_comparison.png)) und Validierung aller Qualitätskriterien.
+   Visualisierung der stabilisierten Trajektorie im Vergleich zur Ground Truth ([trajectory_comparison.png](genesis-oracle/data/trajectory_comparison.png)) und Validierung aller Qualitätskriterien.
 
 ### 4.2 Empirische Ergebnisse & Metriken-Checklist
 

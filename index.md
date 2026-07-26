@@ -976,3 +976,66 @@ Zur Visualisierung des Lieferstatus wird eine A2UI-Komponentendefinition im flac
 ### A2UI-JSON-Payload (`ps12/a2ui_schema.json`)
 [JSON-Schema anzeigen](file:///home/xayah/Documents/anmosys26/ps12/a2ui_schema.json)
 
+---
+
+# Problem Set 13: Capstone Project – Das kollektive Labor: PINN-Swarm & Vision API
+**Datum:** 26. Juli 2026
+
+## Exercise 1: Systemarchitektur & Mathematisches Fundament
+
+Im Capstone-Projekt haben wir eine dreischichtige, adversariale Multi-Agenten-Architektur (MAS) auf Basis von **Physics-Informed Neural Networks (PINNs)** in **JAX/Flax** entwickelt.
+
+### Dreischichtiger Aufbau
+1. **Execution Layer (JAX/Flax Engine):** Hochleistungsfähige ODE-Simulation mit JAX Automatic Differentiation (`jax.grad`), Vektorisierung (`jax.vmap`) und JIT-Kompilierung (`jax.jit`).
+2. **Orchestration Layer (Antigravity ADE & Multi-Agent Protocol):** Echtzeit-Kommunikation und Parameter-Hypothesentransfer über ein striktes JSON-Schema.
+3. **Assurance Layer (Adversariales Peer-Review-Verfahren):** Formaler Erhaltungssatz-Check durch Agent B zur Beseitigung kognitiver Halluzinationen.
+
+### Mathematische Formulierung der Physik & PINN Loss
+Die Bewegungsgleichung des gedämpften harmonischen Oscillators:
+
+$$\frac{d^2 x}{dt^2} + \beta \frac{dx}{dt} + \omega^2 x = 0$$
+
+Die PINN Loss-Funktion kombiniert Daten- und Physik-Loss:
+
+$$\mathcal{L}_{\text{total}} = \mathcal{L}_{\text{data}} + \lambda_{\text{phys}} \mathcal{L}_{\text{phys}}$$
+
+wobei $\mathcal{L}_{\text{phys}} = \frac{1}{N_{\text{phys}}} \sum_{i=1}^{N_{\text{phys}}} \left\vert \frac{d^2 \hat{x}^{(i)}}{dt^2} + \beta \frac{d\hat{x}^{(i)}}{dt} + \omega^2 \hat{x}^{(i)} \right\vert^2$.
+
+---
+
+## Exercise 2: Multi-Agenten-Interaktion & Closed-Loop Peer-Review Audit
+
+Die Kommunikation zwischen **Agent A (Vision Scan)** und **Agent B (Physik-Auditor)** erfolgt über strukturierte JSON-Payloads.
+
+### Korrekturprotokoll bei Störung ($t = 4.25\text{ s}$)
+1. **Agent A (Vision Scan):** Extrahiert anhand der Visualisierung eine Parameterhypothese ($\beta = 0.15, \omega = 2.10$).
+2. **Agent B (Physik-Audit):** Berechnet in JAX den ODE-Residual Loss ($\mathcal{L}_{\text{phys}} = 0.4821 > 0.0500$) und weist die unphysikalische Hypothese ab (**`STATUS: REJECTED`**).
+3. **Gradienten-Korrektur & Konsens:** Agent B berechnet via JAX Auto-Diff den optimalen Korrekturvektor ($\beta = 0.4210, \omega = 2.0000$), welcher bei erneuter Prüfung den Toleranzschwellenwert erfüllt ($\mathcal{L}_{\text{phys}} = 0.0001 \le 0.0500$) und genehmigt wird (**`STATUS: APPROVED`**).
+
+---
+
+## Exercise 3: Antigravity ADE Live-Ausführung & Empirische Findings
+
+Das Live-Demo-Protokoll wurde in der Antigravity ADE Konsole in fünf Schritten ausgeführt:
+
+1. **Umgebungstest:** `python src/oracle_ping.py` (API-Test via `Gemini 3.5 Flash`).
+2. **Störungsinjektion:** `python src/generate_signals.py --inject-noise` (Signalgenerierung mit $50\,\mathrm{Hz}$ Rauschartefakt).
+3. **Multimodales Vision-Scanning:** `python -m cognitive_core.agent --mode vision` (Zero-Shot Analyse durch Agent A).
+4. **Physik-Audit & Konsens:** `python -m scholar_prime.agent --audit data/anomaly_info.json` (JAX ODE Audit & Parameterinjektion in $4.2\,\mathrm{ms}$).
+5. **Re-Plotting & Evaluierung:** `python src/generate_plots.py --compare` (Erzeugung des Evaluierungsplots).
+
+### Empirische Benchmark-Ergebnisse
+
+| Evaluierungsparameter | Soll-Schwellenwert | Gemessener Wert (Live-Demo) | Status |
+| :--- | :--- | :--- | :---: |
+| **$L_2$ Relativer Fehler** | $< 10\%$ | **6.78 %** (Senkung von $45.24\%$) | ✅ PASSED |
+| **Konsens-Latenz** | $< 500\,\mathrm{ms}$ | **4.2 ms** | ✅ PASSED |
+| **Physikalische Konsistenz** | $\mathcal{L}_{\text{phys}} \le 0.05$ ($t > 5\,\mathrm{s}$) | **$\mathcal{L}_{\text{phys}} = 0.0001$** | ✅ PASSED |
+
+### Referenzierte Artefakte
+- [Projektdokumentation (PDF)](file:///home/xayah/Documents/anmosys26/ps13/projektdokumentation.pdf)
+- [Projektdokumentation (Markdown)](file:///home/xayah/Documents/anmosys26/ps13/projektdokumentation.md)
+- [Live Demo CLI Integration](file:///home/xayah/Documents/anmosys26/genesis-oracle/README.md)
+- [Trajektorien-Vergleichsplot](file:///home/xayah/Documents/anmosys26/ps13/trajectory_comparison.png)
+
+
