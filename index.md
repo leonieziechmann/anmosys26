@@ -1033,9 +1033,9 @@ Das Live-Demo-Protokoll wurde in der Antigravity ADE Konsole in fünf Schritten 
 | **Physikalische Konsistenz** | $\mathcal{L}_{\text{phys}} \le 0.05$ ($t > 5\,\mathrm{s}$) | **$\mathcal{L}_{\text{phys}} = 0.0001$** | ✅ PASSED |
 
 ### Referenzierte Artefakte
-- [Projektdokumentation (PDF)](file:///home/xayah/Documents/anmosys26/ps13/projektdokumentation.pdf)
-- [Projektdokumentation (Markdown)](file:///home/xayah/Documents/anmosys26/ps13/projektdokumentation.md)
-- [Live Demo CLI Integration](file:///home/xayah/Documents/anmosys26/genesis-oracle/README.md)
-- [Trajektorien-Vergleichsplot](file:///home/xayah/Documents/anmosys26/ps13/trajectory_comparison.png)
+- [Projektdokumentation (PDF)](ps13/projektdokumentation.pdf)
+- [Projektdokumentation (Markdown)](ps13/projektdokumentation.md)
+- [Live Demo CLI Integration](genesis-oracle/README.md)
+- [Trajektorien-Vergleichsplot](ps13/trajectory_comparison.png)
 
 
