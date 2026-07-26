@@ -26,11 +26,18 @@
       "value": "0.18",
       "unit": "dimensionless",
       "context": "Stabilized after anomaly at t=4.0s"
+    },
+    {
+      "name": "JAX Swarm Damping Beta",
+      "value": "0.22",
+      "unit": "dimensionless",
+      "context": "Stabilized after anomaly at t=4.25s"
     }
   ],
   "jax_state": {
-    "damping_beta": 0.18,
-    "anomaly_timestamp": 4.0,
+    "damping_beta": 0.22,
+    "anomaly_timestamp": 4.25,
     "stabilized": true
-  }
+  },
+  "supply_shortage": true
 }

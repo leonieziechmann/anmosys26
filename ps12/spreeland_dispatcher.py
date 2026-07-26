@@ -177,10 +177,46 @@ async def run_dispatch_flow(use_mock: bool):
 # -----------------------------------------------------------------------------
 # Script Entry Point
 # -----------------------------------------------------------------------------
+def inject_shock_state(shock_name: str):
+    if shock_name != "supply_shortage":
+        print(f"[Dispatcher Error]: Unknown shock type '{shock_name}'. Only 'supply_shortage' is supported.")
+        sys.exit(1)
+        
+    print("=" * 70)
+    print(f"🚨  [Dispatcher]: INJECTING SHOCK '{shock_name}' into Simulation Parameters...")
+    print("=" * 70)
+    
+    paths = [
+        "/home/xayah/Documents/anmosys26/simulation_parameters.json",
+        "/home/xayah/Documents/anmosys26/genesis-oracle/simulation_parameters.json"
+    ]
+    updated = False
+    for p in paths:
+        if os.path.exists(p):
+            try:
+                with open(p, "r") as f:
+                    data = json.load(f)
+                data["supply_shortage"] = True
+                with open(p, "w") as f:
+                    json.dump(data, f, indent=2)
+                print(f"[Dispatcher]: Updated {os.path.basename(p)} -> supply_shortage: True")
+                updated = True
+            except Exception as e:
+                print(f"[Dispatcher Error]: Failed to write to {p}: {e}")
+                
+    if updated:
+        print("\n[Dispatcher Status]: Shock successfully injected. Game-loop watcher will trigger event horizon.")
+    else:
+        print("[Dispatcher Error]: No parameter files found to update.")
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Spreeland Logistics Sync starter script.")
     parser.add_argument("--mock", action="store_true", help="Run with mock database tools (default when offline).")
+    parser.add_argument("--inject-shock", type=str, help="Inject a disturbance/shock into the simulation.")
     args = parser.parse_args()
     
-    # Run the async loop
-    asyncio.run(run_dispatch_flow(use_mock=args.mock))
+    if args.inject_shock:
+        inject_shock_state(args.inject_shock)
+    else:
+        # Run the async loop
+        asyncio.run(run_dispatch_flow(use_mock=args.mock))
