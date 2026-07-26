@@ -1,1 +1,12 @@
-{"clipping_index": 623}
+{
+  "anomaly_detected": true,
+  "bounding_box": [
+    80,
+    449,
+    878,
+    493
+  ],
+  "estimated_damping_beta": 0.22,
+  "estimated_frequency_omega": 6.28,
+  "confidence": 0.95
+}

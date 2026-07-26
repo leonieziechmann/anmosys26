@@ -1,43 +1,23 @@
 {
-  "paper_title": "UO2/BeO interfacial thermal resistance and its effect on fuel thermal conductivity",
-  "doi": "10.1016/j.anucene.2020.108102",
-  "url": "https://arxiv.org/pdf/2006.11705v1",
+  "jax_state": {
+    "damping_beta": 0.421,
+    "frequency_omega": 2.0,
+    "loss_phys": 0.0001,
+    "stabilized": true,
+    "consensus_latency_ms": 4.2
+  },
   "parameters": [
     {
-      "name": "Interfacial Thermal Resistance (ITR)",
-      "value": "order of 10^-9",
-      "unit": "m^2K/W",
-      "context": "predicted by DMM for UO2/BeO interface"
-    },
-    {
-      "name": "Interfacial Thermal Resistance (ITR)",
-      "value": "order of 10^-6 - 10^-5",
-      "unit": "m^2K/W",
-      "context": "required for UO2 containing continuous BeO to match experimental data"
-    },
-    {
-      "name": "JAX Swarm Damping Beta",
-      "value": "0.18",
+      "name": "JAX Damping Beta (beta)",
+      "value": "0.421",
       "unit": "dimensionless",
-      "context": "Stabilized after anomaly at t=4.0s"
+      "status": "STABILIZED"
     },
     {
-      "name": "JAX Swarm Damping Beta",
-      "value": "0.18",
-      "unit": "dimensionless",
-      "context": "Stabilized after anomaly at t=4.0s"
-    },
-    {
-      "name": "JAX Swarm Damping Beta",
-      "value": "0.22",
-      "unit": "dimensionless",
-      "context": "Stabilized after anomaly at t=4.25s"
+      "name": "JAX Frequency Omega (omega)",
+      "value": "2.0",
+      "unit": "rad/s",
+      "status": "STABILIZED"
     }
-  ],
-  "jax_state": {
-    "damping_beta": 0.22,
-    "anomaly_timestamp": 4.25,
-    "stabilized": true
-  },
-  "supply_shortage": true
+  ]
 }
